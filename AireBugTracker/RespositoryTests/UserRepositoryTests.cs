@@ -27,7 +27,7 @@ namespace RespositoryTests
                 // Verify
                 Assert.That(theUsers, Has.Count.EqualTo(3));
 
-                var firstUser = theUsers.Single(bug => bug.Id == 1);
+                var firstUser = theUsers.Single(u => u.Id == 1);
 
                 Assert.That(firstUser.Name, Is.EqualTo("Barry McBarry"));
             }
@@ -36,7 +36,7 @@ namespace RespositoryTests
         [Test]
         public async Task CreateUser_CreatesUser()
         {
-            var connection = await TestBugHelper.GetSeededEffortConnection();
+            var connection = await TestUserHelper.GetSeededEffortConnection();
             var newUser = new User { 
                 Name = "Nelly McNelly"
             };
@@ -47,11 +47,35 @@ namespace RespositoryTests
                 var userRepository = new UserRepository(dbContext);
                 await userRepository.CreateAsync(newUser);
 
-                // Retrieve the new user for the DB
-                var retrievedBug = await userRepository.GetById(newUser.Id);
+                // Retrieve the new user from the DB
+                var retrievedUser = await userRepository.GetById(newUser.Id);
 
                 // Verify
-                Assert.That(retrievedBug.Name, Is.EqualTo(newUser.Name));
+                Assert.That(retrievedUser.Name, Is.EqualTo(newUser.Name));
+            }
+        }
+
+        [Test]
+        public async Task UpdateUser_UpdatesUser()
+        {
+            var connection = await TestUserHelper.GetSeededEffortConnection();
+            var updatedUser = new User
+            {
+                Id = 3,
+                Name = "Sally McBarry"
+            };
+
+            using (var dbContext = new BugTrackerContext(connection))
+            {
+                // Persist the new bug
+                var userRepository = new UserRepository(dbContext);
+                await userRepository.UpdateAsync(updatedUser);
+
+                // Retrieve the new bug for the DB
+                var retrievedUser = await userRepository.GetById(updatedUser.Id);
+
+                // Verify
+                Assert.That(retrievedUser.Name, Is.EqualTo(updatedUser.Name));
             }
         }
     }

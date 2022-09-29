@@ -155,7 +155,7 @@ namespace RespositoryTests
                 var bugRepository = new BugRepository(dbContext);
                 await bugRepository.UpdateAsync(updatedBug);
 
-                // Retrieve the new bug for the DB
+                // Retrieve the new bug from the DB
                 var retrievedBug = await bugRepository.GetById(updatedBug.Id);
 
                 // Verify
