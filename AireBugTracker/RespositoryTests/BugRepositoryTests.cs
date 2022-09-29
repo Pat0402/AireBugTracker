@@ -12,11 +12,6 @@ namespace RespositoryTests
 {
     public class BugRepositoryTests
     {
-        [SetUp]
-        public void Setup()
-        {
-        }
-
         [Test]
         public async Task GetAll_ReturnsAllBugs()
         {
