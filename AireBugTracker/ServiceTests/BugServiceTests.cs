@@ -1,7 +1,10 @@
 using DatabaseContext.Models;
 using Moq;
 using Repsoitories.Interfaces;
+using Repsoitories.Respositories;
 using Services.Services;
+using System.Data.Entity.Infrastructure;
+using System.Diagnostics;
 
 namespace ServiceTests
 {
@@ -117,6 +120,72 @@ namespace ServiceTests
             });
 
             bugRepositoryMock.Verify(b => b.GetById(4), Times.Once());
+        }
+
+        [Test]
+        public async Task CreateBug_CreatesBug()
+        {
+            // Create mock repository
+            var bugRepositoryMock = new Mock<IBugRepository>();
+            var theBug = new Bug()
+            {
+                Title = "First Bug",
+                Details = "These are the details of the first bug",
+                OpenedDate = DateTimeOffset.UtcNow,
+                IsOpen = true
+            };
+
+            bugRepositoryMock.Setup(b => b.CreateAsync(It.IsAny<Bug>())).Returns(Task.FromResult<Bug>(theBug));
+
+            // Create the service
+            var bugService = new BugService(bugRepositoryMock.Object);
+
+            // Call action
+            var result = await bugService.CreateAsync(theBug);
+
+            // Verify
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result.IsSuccessful, Is.True);
+                Assert.That(result.Target.IsOpen, Is.True);
+                Assert.That(result.Target.Title, Is.EqualTo("First Bug"));
+                Assert.That(result.Target.Details, Is.EqualTo("These are the details of the first bug"));
+                Assert.That(result.Target.OpenedDate, Is.EqualTo(theBug.OpenedDate));
+            });
+
+            bugRepositoryMock.Verify(b => b.CreateAsync(It.IsAny<Bug>()), Times.Once());
+        }
+
+        [Test]
+        public async Task CreateConflictingBug_IsUnsuccessful()
+        {
+            // Create mock repository
+            var bugRepositoryMock = new Mock<IBugRepository>();
+            var theBug = new Bug()
+            {
+                Title = "First Bug",
+                Details = "These are the details of the first bug",
+                OpenedDate = DateTimeOffset.UtcNow,
+                IsOpen = true
+            };
+
+            bugRepositoryMock.Setup(b => b.CreateAsync(It.IsAny<Bug>()))
+                .Throws(new DbUpdateException());
+
+            // Create the service
+            var bugService = new BugService(bugRepositoryMock.Object);
+
+            // Verify
+            var result = await bugService.CreateAsync(theBug);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result.IsSuccessful, Is.False);
+                Assert.That(result.Target, Is.Null);
+            });
+
+            bugRepositoryMock.Verify(b => b.CreateAsync(It.IsAny<Bug>()), Times.Once());
         }
     }
 }
