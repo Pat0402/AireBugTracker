@@ -13,6 +13,27 @@ namespace RespositoryTests
     public class UserRepositoryTests
     {
         [Test]
+        public async Task GetAll_ReturnsAllUsers()
+        {
+            // Set up in memory database
+            var connection = await TestUserHelper.GetSeededEffortConnection();
+
+            using (var dbContext = new BugTrackerContext(connection))
+            {
+                // Retrieve the persisted data
+                var userRepository = new UserRepository(dbContext);
+                var theUsers = await userRepository.GetAll();
+
+                // Verify
+                Assert.That(theUsers, Has.Count.EqualTo(3));
+
+                var firstUser = theUsers.Single(bug => bug.Id == 1);
+
+                Assert.That(firstUser.Name, Is.EqualTo("Barry McBarry"));
+            }
+        }
+
+        [Test]
         public async Task CreateUser_CreatesUser()
         {
             var connection = await TestBugHelper.GetSeededEffortConnection();
