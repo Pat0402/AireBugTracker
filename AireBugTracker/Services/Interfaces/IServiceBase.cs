@@ -12,5 +12,6 @@ namespace Services.Interfaces
         Task<List<T>> GetAll();
         Task<T> GetById(int id);
         Task<ServiceResult<T>> CreateAsync(T entity);
+        Task<ServiceResult<T>> UpdateAsync(T entity);
     }
 }

@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Services.Services
 {
-    public class ServiceBase<T> : IServiceBase<T> where T : class
+    public abstract class ServiceBase<T> : IServiceBase<T> where T : class
     {
         public ServiceBase(IRepositoryBase<T> repository)
         {
@@ -45,5 +45,7 @@ namespace Services.Services
                 };
             }
         }
+
+        public abstract Task<ServiceResult<T>> UpdateAsync(T entity);
     }
 }

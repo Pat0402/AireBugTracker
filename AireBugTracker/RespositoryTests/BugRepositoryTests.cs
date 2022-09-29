@@ -140,5 +140,62 @@ namespace RespositoryTests
                     async () => await bugRepository.CreateAsync(newBug));
             }
         }
+
+        [Test]
+        public async Task UpdateBug_UpdatesBug()
+        {
+            var connection = await TestBugHelper.GetSeededEffortConnection();
+            var updatedBug = new Bug
+            {
+                Id = 3,
+                Title = "Third Bug",
+                Details = "These are the details of the third bug",
+                OpenedDate = DateTimeOffset.UtcNow,
+                IsOpen = false
+            };
+
+            using (var dbContext = new BugTrackerContext(connection))
+            {
+                // Persist the new bug
+                var bugRepository = new BugRepository(dbContext);
+                await bugRepository.UpdateAsync(updatedBug);
+
+                // Retrieve the new bug for the DB
+                var retrievedBug = await bugRepository.GetById(updatedBug.Id);
+
+                // Verify
+                Assert.Multiple(() =>
+                {
+                    Assert.That(retrievedBug.IsOpen, Is.EqualTo(updatedBug.IsOpen));
+                    Assert.That(retrievedBug.Title, Is.EqualTo(updatedBug.Title));
+                    Assert.That(retrievedBug.Details, Is.EqualTo(updatedBug.Details));
+                    Assert.That(retrievedBug.OpenedDate, Is.EqualTo(updatedBug.OpenedDate));
+                });
+            }
+        }
+
+        [Test]
+        public async Task UpdateBugWithConflict_ThrowsException()
+        {
+            var connection = await TestBugHelper.GetSeededEffortConnection();
+            var updatedBug = new Bug
+            {
+                Id = 3,
+                Title = "Second Bug",
+                Details = "These are the details of the third bug",
+                OpenedDate = DateTimeOffset.UtcNow,
+                IsOpen = false
+            };
+
+            using (var dbContext = new BugTrackerContext(connection))
+            {
+                // Persist the new bug
+                var bugRepository = new BugRepository(dbContext);
+                
+                // Verify
+                Assert.ThrowsAsync<System.Data.Entity.Infrastructure.DbUpdateException>(
+                    async () => await bugRepository.UpdateAsync(updatedBug));
+            }
+        }
     }
 }
