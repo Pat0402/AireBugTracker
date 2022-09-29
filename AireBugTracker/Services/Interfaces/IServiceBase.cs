@@ -9,5 +9,6 @@ namespace Services.Interfaces
     public interface IServiceBase <T>
     {
         Task<List<T>> GetAll();
+        Task<T> GetById(int id);
     }
 }
