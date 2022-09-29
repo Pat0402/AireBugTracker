@@ -1,7 +1,9 @@
 using DatabaseContext;
 using DatabaseContext.Models;
+using Effort.Provider;
 using Microsoft.EntityFrameworkCore;
 using Repsoitories.Respositories;
+using RespositoryTests.Helpers;
 using System.Reflection.Metadata;
 using System.Xml.Linq;
 
@@ -18,37 +20,7 @@ namespace RespositoryTests
         public async Task GetAll_ReturnsAllBugs()
         {
             // Set up in memory database
-            var connection = Effort.DbConnectionFactory.CreateTransient();
-            
-            using (var dbContext = new BugTrackerContext(connection))
-            {
-                dbContext.Bugs.AddRange(new List<Bug> {
-                    new Bug
-                    {
-                        Id = 1,
-                        Title = "First Bug",
-                        Details = "These are the details of the first bug",
-                        OpenedDate = DateTimeOffset.UtcNow,
-                        IsOpen = true
-                    },
-                    new Bug
-                    {
-                        Id = 2,
-                        Title = "Second Bug",
-                        Details = "These are the details of the second bug",
-                        OpenedDate = DateTimeOffset.UtcNow
-                    },
-                    new Bug
-                    {
-                        Id = 3,
-                        Title = "Third Bug",
-                        Details = "These are the details of the third bug",
-                        OpenedDate = DateTimeOffset.UtcNow,
-                        IsOpen = true
-                    }
-                });
-                await dbContext.SaveChangesAsync();
-            }
+            var connection = await TestBugHelper.GetSeededEffortConnection();
 
             using (var dbContext = new BugTrackerContext(connection))
             {
@@ -66,6 +38,48 @@ namespace RespositoryTests
                     Assert.That(firstBug.Title, Is.EqualTo("First Bug"));
                     Assert.That(firstBug.Details, Is.EqualTo("These are the details of the first bug"));
                     Assert.That(firstBug.OpenedDate, Is.AtMost(DateTimeOffset.UtcNow));
+                });
+            }
+        }
+
+        [Test]
+        public async Task GetByExistingId_ReturnsBug()
+        {
+            // Set up in memory database
+            var connection = await TestBugHelper.GetSeededEffortConnection();
+
+            using (var dbContext = new BugTrackerContext(connection))
+            {
+                // Retrieve the persisted data
+                var bugRepository = new BugRepository(dbContext);
+                var theBug = await bugRepository.GetById(2);
+
+                // Verify
+                Assert.Multiple(() =>
+                {
+                    Assert.That(theBug.IsOpen, Is.False);
+                    Assert.That(theBug.Title, Is.EqualTo("Second Bug"));
+                    Assert.That(theBug.Details, Is.EqualTo("These are the details of the second bug"));
+                    Assert.That(theBug.OpenedDate, Is.AtMost(DateTimeOffset.UtcNow));
+                });
+            }
+        }
+
+        [Test]
+        public async Task GetByNonExistentId_ReturnsNull()
+        {
+            var connection = await TestBugHelper.GetSeededEffortConnection();
+
+            using (var dbContext = new BugTrackerContext(connection))
+            {
+                // Retrieve the persisted data
+                var bugRepository = new BugRepository(dbContext);
+                var theBug = await bugRepository.GetById(4);
+
+                // Verify
+                Assert.Multiple(() =>
+                {
+                    Assert.That(theBug, Is.Null);
                 });
             }
         }

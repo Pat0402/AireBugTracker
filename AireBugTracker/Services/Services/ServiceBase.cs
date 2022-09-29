@@ -19,5 +19,6 @@ namespace Services.Services
         protected IRepositoryBase<T> Repository { get; set; }
         
         public Task<List<T>> GetAll() => Repository.GetAll();
+        public Task<T> GetById(int id) => Repository.GetById(id);
     }
 }

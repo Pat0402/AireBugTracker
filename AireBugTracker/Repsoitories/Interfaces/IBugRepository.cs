@@ -7,5 +7,5 @@ using System.Threading.Tasks;
 
 namespace Repsoitories.Interfaces
 {
-    public interface IBugRepository : IRepositoryBase<Bug> { }    
+    public interface IBugRepository : IRepositoryBase<Bug> { }
 }

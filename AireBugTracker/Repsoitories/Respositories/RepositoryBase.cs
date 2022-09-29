@@ -18,5 +18,6 @@ namespace Repsoitories.Respositories
 
         protected BugTrackerContext DbContext { get; set; }
         public Task<List<T>> GetAll() => DbContext.Set<T>().ToListAsync();
+        public Task<T> GetById(int id) => DbContext.Set<T>().FindAsync(id);
     }
 }
