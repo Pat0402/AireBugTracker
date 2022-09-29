@@ -3,6 +3,7 @@ using DatabaseContext.Models;
 using Repsoitories.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,9 +16,14 @@ namespace Repsoitories.Respositories
         {
         }
 
-        public override Task<User> UpdateAsync(User entity)
+        public async override Task<User> UpdateAsync(User entity)
         {
-            throw new NotImplementedException();
+            var theUser = await DbContext.Users.SingleAsync(b => b.Id == entity.Id);
+            theUser.Name = entity.Name;
+
+            await DbContext.SaveChangesAsync();
+
+            return theUser;
         }
     }
 }
