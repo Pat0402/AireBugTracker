@@ -1,4 +1,5 @@
 ﻿using DatabaseContext.Models;
+using System.Data.Common;
 using System.Data.Entity;
 using System.Data.Entity.ModelConfiguration.Conventions;
 
@@ -6,9 +7,9 @@ namespace DatabaseContext
 {
     public class BugTrackerContext : DbContext
     {
-        public BugTrackerContext() : base("BugTrackerContext")
-        {
-        }
+        public BugTrackerContext() : base("BugTrackerContext") { }
+
+        public BugTrackerContext(DbConnection connection) : base(connection, true) { }
 
         public DbSet<Bug> Bugs { get; set; }
         public DbSet<User> Users { get; set; }
