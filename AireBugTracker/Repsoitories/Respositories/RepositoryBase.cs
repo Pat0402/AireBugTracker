@@ -27,5 +27,7 @@ namespace Repsoitories.Respositories
             
             return result;
         }
+
+        public abstract Task<T> UpdateAsync(T entity);
     }
 }

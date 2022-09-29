@@ -15,5 +15,18 @@ namespace Repsoitories.Respositories
         public BugRepository(BugTrackerContext context) : base(context)
         {
         }
+
+        public async override Task<Bug> UpdateAsync(Bug entity)
+        {
+            var theBug = await DbContext.Bugs.SingleAsync(b => b.Id == entity.Id);
+            theBug.Details = entity.Details;
+            theBug.IsOpen = entity.IsOpen;
+            theBug.Title = entity.Title;
+            theBug.OpenedDate = entity.OpenedDate;
+
+            await DbContext.SaveChangesAsync();
+
+            return theBug;
+        }
     }
 }
