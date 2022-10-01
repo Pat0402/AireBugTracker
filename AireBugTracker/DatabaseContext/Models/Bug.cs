@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -13,6 +14,7 @@ namespace DatabaseContext.Models
         public int Id { get; set; }
 
         [Index(IsUnique = true)]
+        [StringLength(250)]
         public string Title { get; set; }
         public string Details { get; set; } 
         public bool IsOpen { get; set; }

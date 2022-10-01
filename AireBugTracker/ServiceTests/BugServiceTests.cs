@@ -1,7 +1,7 @@
 using DatabaseContext.Models;
 using Moq;
-using Repsoitories.Interfaces;
-using Repsoitories.Respositories;
+using Repositories.Interfaces;
+using Repositories.Respositories;
 using Services.Services;
 using System.Data.Entity.Infrastructure;
 using System.Diagnostics;

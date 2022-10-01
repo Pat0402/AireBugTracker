@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Repsoitories.Interfaces
+namespace Repositories.Interfaces
 {
     public interface IRepositoryBase<T>
     {

@@ -2,7 +2,7 @@ using DatabaseContext;
 using DatabaseContext.Models;
 using Effort.Provider;
 using Microsoft.EntityFrameworkCore;
-using Repsoitories.Respositories;
+using Repositories.Respositories;
 using RespositoryTests.Helpers;
 using System.Diagnostics;
 using System.Reflection.Metadata;

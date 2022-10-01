@@ -1,6 +1,6 @@
 ﻿using DatabaseContext;
 using DatabaseContext.Models;
-using Repsoitories.Interfaces;
+using Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Repsoitories.Respositories
+namespace Repositories.Respositories
 {
     public class UserRepository : RepositoryBase<User>, IUserRepository
     {
