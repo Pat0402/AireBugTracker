@@ -1,6 +1,6 @@
 ﻿using DatabaseContext.Models;
 using DatabaseContext;
-using Repsoitories.Respositories;
+using Repositories.Respositories;
 using RespositoryTests.Helpers;
 using System;
 using System.Collections.Generic;

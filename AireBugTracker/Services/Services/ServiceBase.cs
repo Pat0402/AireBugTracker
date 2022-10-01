@@ -1,5 +1,5 @@
-﻿using Repsoitories.Interfaces;
-using Repsoitories.Respositories;
+﻿using Repositories.Interfaces;
+using Repositories.Respositories;
 using Services.Interfaces;
 using Services.Models;
 using System;

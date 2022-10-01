@@ -1,5 +1,5 @@
 ﻿using DatabaseContext;
-using Repsoitories.Interfaces;
+using Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Repsoitories.Respositories
+namespace Repositories.Respositories
 {
     public abstract class RepositoryBase<T> : IRepositoryBase<T> where T : class
     {
