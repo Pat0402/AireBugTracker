@@ -2,9 +2,11 @@ using DatabaseContext.Models;
 using Moq;
 using Repositories.Interfaces;
 using Repositories.Respositories;
+using Services.Models;
 using Services.Services;
 using System.Data.Entity.Infrastructure;
 using System.Diagnostics;
+using System.Net;
 
 namespace ServiceTests
 {
@@ -47,7 +49,7 @@ namespace ServiceTests
             var bugService = new BugService(bugRepositoryMock.Object);
 
             // Call action
-            var result = await bugService.GetAll();
+            var result = await bugService.GetAllAsync();
 
             // Verify
             Assert.That(theBugs, Has.Count.EqualTo(3));
@@ -84,16 +86,17 @@ namespace ServiceTests
             var bugService = new BugService(bugRepositoryMock.Object);
 
             // Call action
-            var result = await bugService.GetById(1);
+            var result = await bugService.GetByIdAsync(1);
 
             // Verify
             
             Assert.Multiple(() =>
             {
-                Assert.That(result.IsOpen, Is.True);
-                Assert.That(result.Title, Is.EqualTo("First Bug"));
-                Assert.That(result.Details, Is.EqualTo("These are the details of the first bug"));
-                Assert.That(result.OpenedDate, Is.AtMost(DateTimeOffset.UtcNow));
+                Assert.That(result.Target?.IsOpen, Is.True);
+                Assert.That(result.Target?.Title, Is.EqualTo("First Bug"));
+                Assert.That(result.Target?.Details, Is.EqualTo("These are the details of the first bug"));
+                Assert.That(result.Target?.OpenedDate, Is.AtMost(DateTimeOffset.UtcNow));
+                Assert.That(result.Status, Is.EqualTo(HttpStatusCode.OK));
             });
 
             bugRepositoryMock.Verify(b => b.GetById(1), Times.Once());
@@ -110,13 +113,14 @@ namespace ServiceTests
             var bugService = new BugService(bugRepositoryMock.Object);
 
             // Call action
-            var result = await bugService.GetById(4);
+            var result = await bugService.GetByIdAsync(4);
 
             // Verify
 
             Assert.Multiple(() =>
             {
-                Assert.That(result, Is.Null);
+                Assert.That(result.Target, Is.Null);
+                Assert.That(result.Status, Is.EqualTo(HttpStatusCode.NotFound));
             });
 
             bugRepositoryMock.Verify(b => b.GetById(4), Times.Once());
@@ -144,14 +148,13 @@ namespace ServiceTests
             var result = await bugService.CreateAsync(theBug);
 
             // Verify
-
             Assert.Multiple(() =>
             {
-                Assert.That(result.IsSuccessful, Is.True);
-                Assert.That(result.Target.IsOpen, Is.True);
-                Assert.That(result.Target.Title, Is.EqualTo("First Bug"));
-                Assert.That(result.Target.Details, Is.EqualTo("These are the details of the first bug"));
-                Assert.That(result.Target.OpenedDate, Is.EqualTo(theBug.OpenedDate));
+                Assert.That(result.Status, Is.EqualTo(HttpStatusCode.Created));
+                Assert.That(result.Target?.IsOpen, Is.True);
+                Assert.That(result.Target?.Title, Is.EqualTo("First Bug"));
+                Assert.That(result.Target?.Details, Is.EqualTo("These are the details of the first bug"));
+                Assert.That(result.Target?.OpenedDate, Is.EqualTo(theBug.OpenedDate));
             });
 
             bugRepositoryMock.Verify(b => b.CreateAsync(It.IsAny<Bug>()), Times.Once());
@@ -181,7 +184,7 @@ namespace ServiceTests
 
             Assert.Multiple(() =>
             {
-                Assert.That(result.IsSuccessful, Is.False);
+                Assert.That(result.Status, Is.EqualTo(HttpStatusCode.Conflict));
                 Assert.That(result.Target, Is.Null);
             });
 
@@ -213,11 +216,11 @@ namespace ServiceTests
 
             Assert.Multiple(() =>
             {
-                Assert.That(result.IsSuccessful, Is.True);
-                Assert.That(result.Target.IsOpen, Is.False);
-                Assert.That(result.Target.Title, Is.EqualTo("First Bug"));
-                Assert.That(result.Target.Details, Is.EqualTo("These are the details of the first bug"));
-                Assert.That(result.Target.OpenedDate, Is.EqualTo(theBug.OpenedDate));
+                Assert.That(result.Status, Is.EqualTo(HttpStatusCode.OK));
+                Assert.That(result.Target?.IsOpen, Is.False);
+                Assert.That(result.Target?.Title, Is.EqualTo("First Bug"));
+                Assert.That(result.Target?.Details, Is.EqualTo("These are the details of the first bug"));
+                Assert.That(result.Target?.OpenedDate, Is.EqualTo(theBug.OpenedDate));
             });
 
             bugRepositoryMock.Verify(b => b.UpdateAsync(theBug), Times.Once());
@@ -247,7 +250,7 @@ namespace ServiceTests
 
             Assert.Multiple(() =>
             {
-                Assert.That(result.IsSuccessful, Is.False);
+                Assert.That(result.Status, Is.EqualTo(HttpStatusCode.Conflict));
                 Assert.That(result.Target, Is.Null);
             });
 

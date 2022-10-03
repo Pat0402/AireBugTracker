@@ -9,8 +9,8 @@ namespace Services.Interfaces
 {
     public interface IServiceBase <T> where T : class
     {
-        Task<List<T>> GetAll();
-        Task<T> GetById(int id);
+        Task<ServiceResult<List<T>>> GetAllAsync();
+        Task<ServiceResult<T>> GetByIdAsync(int id);
         Task<ServiceResult<T>> CreateAsync(T entity);
         Task<ServiceResult<T>> UpdateAsync(T entity);
     }

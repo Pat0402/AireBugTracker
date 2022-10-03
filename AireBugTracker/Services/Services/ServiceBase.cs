@@ -6,7 +6,9 @@ using System;
 using System.Collections.Generic;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
+using System.Net;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -21,8 +23,38 @@ namespace Services.Services
 
         protected IRepositoryBase<T> Repository { get; set; }
 
-        public Task<List<T>> GetAll() => Repository.GetAll();
-        public Task<T> GetById(int id) => Repository.GetById(id);
+        public async Task<ServiceResult<List<T>>> GetAllAsync()
+        {
+            var theBugs = await Repository.GetAll();
+
+            return new ServiceResult<List<T>>
+            {
+                Status = HttpStatusCode.OK,
+                Target = theBugs,
+                Message = "Retrieved all bugs"
+            };
+        }
+        public async Task<ServiceResult<T>> GetByIdAsync(int id)
+        {
+            var theBug = await Repository.GetById(id);
+
+            if (theBug == null)
+            {
+                return new ServiceResult<T>
+                {
+                    Status = HttpStatusCode.NotFound,
+                    Message = $"Resource with Id: \"{id}\" not found"
+                };
+            }
+
+            return new ServiceResult<T>
+            {
+                Status = HttpStatusCode.OK,
+                Target = theBug,
+                Message = "Retrieved all bugs"
+            };
+        }
+
         public async Task<ServiceResult<T>> CreateAsync(T entity)
         {
             try
@@ -31,8 +63,8 @@ namespace Services.Services
 
                 return new ServiceResult<T>
                 {
+                    Status= HttpStatusCode.Created,
                     Target = persistedEntity,
-                    IsSuccessful = true,
                     Message = $"{nameof(T)} successfully created"
                 };
             }
@@ -40,7 +72,7 @@ namespace Services.Services
             {
                 return new ServiceResult<T>
                 {
-                    IsSuccessful = false,
+                    Status = HttpStatusCode.Conflict,
                     Message = $"Failed to create {nameof(T)}, there was a conflict when writing to the database"
                 };
             }
