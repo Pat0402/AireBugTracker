@@ -1,7 +1,6 @@
 using DatabaseContext;
 using DatabaseContext.Models;
 using Effort.Provider;
-using Microsoft.EntityFrameworkCore;
 using Repositories.Respositories;
 using RespositoryTests.Helpers;
 using System.Diagnostics;
@@ -145,7 +144,6 @@ namespace RespositoryTests
                 Id = 3,
                 Title = "Third Bug",
                 Details = "These are the details of the third bug",
-                OpenedDate = DateTimeOffset.UtcNow,
                 IsOpen = false
             };
 
@@ -164,7 +162,7 @@ namespace RespositoryTests
                     Assert.That(retrievedBug.IsOpen, Is.EqualTo(updatedBug.IsOpen));
                     Assert.That(retrievedBug.Title, Is.EqualTo(updatedBug.Title));
                     Assert.That(retrievedBug.Details, Is.EqualTo(updatedBug.Details));
-                    Assert.That(retrievedBug.OpenedDate, Is.EqualTo(updatedBug.OpenedDate));
+                    Assert.That(retrievedBug.OpenedDate, Is.LessThan(DateTimeOffset.UtcNow));
                 });
             }
         }

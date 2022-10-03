@@ -1,32 +1,32 @@
-using AireBugTrackerApi.Helpers;
+﻿using AireBugTrackerApi.Helpers;
 using DatabaseContext.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Services.Interfaces;
 using Services.Models;
-using System.Diagnostics;
 
 namespace AireBugTrackerApi.Controllers
 {
-    [ApiController]
     [Route("api/[controller]")]
-    public class BugController : ControllerBase
+    [ApiController]
+    public class UserController : ControllerBase
     {
-        private readonly ILogger<BugController> _logger;
-        private IBugService _bugService;
+        private readonly ILogger<UserController> _logger;
+        private IUserService _userService;
 
-        public BugController(ILogger<BugController> logger, IBugService bugService)
+        public UserController(ILogger<UserController> logger, IUserService userService)
         {
             _logger = logger;
-            _bugService = bugService;
+            _userService = userService;
         }
 
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var theBugs = await _bugService.GetAllAsync();
-            _logger.LogDebug(LogEvents.GetItems, theBugs.Message);
+            var response = await _userService.GetAllAsync();
+            _logger.LogDebug(LogEvents.GetItems, response.Message);
 
-            return Ok(theBugs.Target);
+            return Ok(response.Target);
         }
 
         [HttpGet("{id}")]
@@ -34,12 +34,12 @@ namespace AireBugTrackerApi.Controllers
         {
             try
             {
-                var theBug = await _bugService.GetByIdAsync(id);
-                _logger.LogDebug(LogEvents.GetItem, theBug.Message);
+                var response = await _userService.GetByIdAsync(id);
+                _logger.LogDebug(LogEvents.GetItem, response.Message);
 
-                return Ok(theBug.Target);
+                return Ok(response.Target);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 _logger.LogError(LogEvents.GetItemInternalError, e, null);
 
@@ -48,11 +48,11 @@ namespace AireBugTrackerApi.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] BugDTO bug)
+        public async Task<IActionResult> Post([FromBody] UserDTO user)
         {
             try
             {
-                var response = await _bugService.CreateAsync(bug);
+                var response = await _userService.CreateAsync(user);
                 _logger.LogDebug(LogEvents.CreateItem, response.Message);
 
                 return StatusCode((int)response.Status, response.Target);
@@ -66,11 +66,11 @@ namespace AireBugTrackerApi.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id, [FromBody] BugDTO bug)
+        public async Task<IActionResult> Put(int id, [FromBody] UserDTO user)
         {
             try
             {
-                var response = await _bugService.UpdateAsync(id, bug);
+                var response = await _userService.UpdateAsync(id, user);
                 _logger.LogDebug(LogEvents.UpdateItem, response.Message);
 
                 return StatusCode((int)response.Status, response.Target);

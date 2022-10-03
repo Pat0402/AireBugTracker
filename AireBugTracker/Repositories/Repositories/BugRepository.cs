@@ -22,7 +22,6 @@ namespace Repositories.Respositories
             theBug.Details = entity.Details;
             theBug.IsOpen = entity.IsOpen;
             theBug.Title = entity.Title;
-            theBug.OpenedDate = entity.OpenedDate;
 
             await DbContext.SaveChangesAsync();
 

@@ -13,23 +13,43 @@ using System.Threading.Tasks;
 
 namespace Services.Services
 {
-    public class BugService : ServiceBase<Bug>, IBugService
+    public class BugService : ServiceBase<Bug, BugDTO>, IBugService
     {
         public BugService(IBugRepository repository) : base(repository)
         {
         }
 
-        public override async Task<ServiceResult<Bug>> UpdateAsync(Bug entity)
+        public override async Task<ServiceResult<Bug>> CreateAsync(BugDTO dto)
+        {
+            var theBug = new Bug
+            {
+                IsOpen = true,
+                Title = dto.Title,
+                Details = dto.Details,
+                OpenedDate = DateTimeOffset.UtcNow
+            };
+
+            return await CreateAsync(theBug);
+        }
+
+        public override async Task<ServiceResult<Bug>> UpdateAsync(int id, BugDTO bugDTO)
         {
             try
             {
-                var updatedEntity = await Repository.UpdateAsync(entity);
+                var theBug = new Bug
+                {
+                    Id = id,
+                    Title = bugDTO.Title,
+                    Details = bugDTO.Details
+                };
+
+                var updatedEntity = await Repository.UpdateAsync(theBug);
 
                 return new ServiceResult<Bug>
                 {
                     Status = HttpStatusCode.OK,
                     Target = updatedEntity,
-                    Message = $"Bug: \"{entity.Id}\" successfully updated"
+                    Message = $"Bug: \"{id}\" successfully updated"
                 };
             }
             catch (DbUpdateException)
@@ -38,7 +58,7 @@ namespace Services.Services
                 return new ServiceResult<Bug>
                 {
                     Status = HttpStatusCode.Conflict,
-                    Message = $"Failed to update bug: \"{entity.Id}\", the \"Title\" conflicted with another bug"
+                    Message = $"Failed to update bug: \"{id}\", the \"Title\" conflicted with another bug"
                 };
             }
         }
