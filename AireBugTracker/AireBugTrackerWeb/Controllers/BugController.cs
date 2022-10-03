@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Services.Interfaces;
+using Services.Models;
 
 namespace AireBugTrackerWeb.Controllers
 {
@@ -39,19 +40,11 @@ namespace AireBugTrackerWeb.Controllers
         // POST: BugController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> CreateAsync(IFormCollection collection)
+        public async Task<ActionResult> CreateAsync(BugDTO bug)
         {
             try
             {
-                var theBug = new Bug
-                {
-                    IsOpen = true,
-                    Details = collection["Details"],
-                    Title = collection["Title"],
-                    OpenedDate = DateTimeOffset.UtcNow,
-                };
-
-                await _bugService.CreateAsync(theBug);
+                await _bugService.CreateAsync(bug);
 
                 return RedirectToAction(nameof(Index));
             }
@@ -72,11 +65,11 @@ namespace AireBugTrackerWeb.Controllers
         // POST: BugController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> EditAsync(int id, Bug collection)
+        public async Task<ActionResult> EditAsync(int id, BugDTO bug)
         {
             try
             {
-                var response = await _bugService.UpdateAsync(collection);
+                var response = await _bugService.UpdateAsync(id, bug);
                 return RedirectToAction(nameof(Index));
             }
             catch

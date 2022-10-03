@@ -1,6 +1,7 @@
 ﻿using DatabaseContext.Models;
 using Moq;
 using Repositories.Interfaces;
+using Services.Models;
 using Services.Services;
 using System;
 using System.Collections.Generic;
@@ -91,27 +92,33 @@ namespace ServiceTests
         {
             // Create mock repository
             var userRepositoryMock = new Mock<IUserRepository>();
-            var theUser = new User()
+            var theUserDTO = new UserDTO()
             {
                 Name = "Sally McBarry"
             };
 
-            userRepositoryMock.Setup(u => u.UpdateAsync(theUser)).Returns(Task.FromResult<User>(theUser));
+            var theUserEntity = new User
+            {
+                Id = 1,
+                Name = "Sally McBarry"
+            };
+
+            userRepositoryMock.Setup(u => u.UpdateAsync(It.IsAny<User>())).Returns(Task.FromResult<User>(theUserEntity));
 
             // Create the service
             var userService = new UserService(userRepositoryMock.Object);
 
             // Call action
-            var result = await userService.UpdateAsync(theUser);
+            var result = await userService.UpdateAsync(1, theUserDTO);
 
             // Verify
             Assert.Multiple(() =>
             {
                 Assert.That(result.Status, Is.EqualTo(HttpStatusCode.OK));
-                Assert.That(result.Target?.Name, Is.EqualTo(theUser.Name));
+                Assert.That(result.Target?.Name, Is.EqualTo(theUserEntity.Name));
             });
 
-            userRepositoryMock.Verify(u => u.UpdateAsync(theUser), Times.Once());
+            userRepositoryMock.Verify(u => u.UpdateAsync(It.IsAny<User>()), Times.Once());
         }
     }
 }

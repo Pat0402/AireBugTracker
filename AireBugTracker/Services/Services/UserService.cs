@@ -12,23 +12,38 @@ using System.Threading.Tasks;
 
 namespace Services.Services
 {
-    public class UserService : ServiceBase<User>, IUserService
+    public class UserService : ServiceBase<User, UserDTO>, IUserService
     {
         public UserService(IUserRepository repository) : base(repository)
         {
         }
 
-        public async override Task<ServiceResult<User>> UpdateAsync(User entity)
+        public override async Task<ServiceResult<User>> CreateAsync(UserDTO dto)
+        {
+            var theUser = new User
+            {
+                Name = dto.Name
+            };
+
+            return await CreateAsync(theUser);
+        }
+
+        public async override Task<ServiceResult<User>> UpdateAsync(int id, UserDTO entity)
         {
             try
             {
-                var updatedEntity = await Repository.UpdateAsync(entity);
+                var theUser = new User
+                {
+                    Id = id,
+                    Name = entity.Name,
+                };
+                var updatedUser = await Repository.UpdateAsync(theUser);
 
                 return new ServiceResult<User>
                 {
                     Status = HttpStatusCode.OK,
-                    Target = updatedEntity,
-                    Message = $"User: \"{entity.Id}\" successfully updated"
+                    Target = updatedUser,
+                    Message = $"User: \"{id}\" successfully updated"
                 };
             }
             catch (DbUpdateException)
@@ -37,7 +52,7 @@ namespace Services.Services
                 return new ServiceResult<User>
                 {
                     Status = HttpStatusCode.Conflict,
-                    Message = $"Failed to update user: \"{entity.Id}\", there was a conflict in the database"
+                    Message = $"Failed to update user: \"{id}\", there was a conflict in the database"
                 };
             }
         }
