@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -25,8 +26,8 @@ namespace Services.Services
 
                 return new ServiceResult<User>
                 {
+                    Status = HttpStatusCode.OK,
                     Target = updatedEntity,
-                    IsSuccessful = true,
                     Message = $"User: \"{entity.Id}\" successfully updated"
                 };
             }
@@ -35,7 +36,7 @@ namespace Services.Services
                 // Should be impossible to reach with current requirments, "IsOpen" is the only field a user can edit
                 return new ServiceResult<User>
                 {
-                    IsSuccessful = false,
+                    Status = HttpStatusCode.Conflict,
                     Message = $"Failed to update user: \"{entity.Id}\", there was a conflict in the database"
                 };
             }

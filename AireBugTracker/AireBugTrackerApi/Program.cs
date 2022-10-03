@@ -15,7 +15,7 @@ builder.Services.AddSwaggerGen();
 
 // Dependency Injection
 var connectionString = builder.Configuration.GetConnectionString("BugTrackerContext");
-builder.Services.AddScoped<BugTrackerContext>(s => new BugTrackerContext(connectionString));
+builder.Services.AddScoped(s => new BugTrackerContext(connectionString));
 builder.Services.AddScoped<IBugRepository, BugRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IBugService, BugService>();

@@ -5,6 +5,7 @@ using Services.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -41,12 +42,18 @@ namespace ServiceTests
             var userService = new UserService(userRepositoryMock.Object);
 
             // Call action
-            var result = await userService.GetAll();
+            var result = await userService.GetAllAsync();
 
             // Verify
-            Assert.That(theUsers, Has.Count.EqualTo(3));
-            var firstUser = theUsers.Single(u => u.Id == 2);
-            Assert.That(firstUser.Name, Is.EqualTo("Larry McLarry"));
+            Assert.Multiple(() =>
+            {
+                Assert.That(result?.Target, Is.Not.Null);
+                Assert.That(result?.Target, Has.Count.EqualTo(3));
+                Assert.That(result?.Status, Is.EqualTo(HttpStatusCode.OK));
+            });
+
+            var theUser = theUsers.Single(u => u.Id == 2);
+            Assert.That(theUser.Name, Is.EqualTo("Larry McLarry"));
 
             userRepositoryMock.Verify(u => u.GetAll(), Times.Once());
         }
@@ -72,8 +79,8 @@ namespace ServiceTests
             // Verify
             Assert.Multiple(() =>
             {
-                Assert.That(result.IsSuccessful, Is.True);
-                Assert.That(result.Target.Name, Is.EqualTo(theUser.Name));
+                Assert.That(result.Status, Is.EqualTo(HttpStatusCode.Created));
+                Assert.That(result.Target?.Name, Is.EqualTo(theUser.Name));
             });
 
             userRepositoryMock.Verify(u => u.CreateAsync(theUser), Times.Once());
@@ -98,8 +105,11 @@ namespace ServiceTests
             var result = await userService.UpdateAsync(theUser);
 
             // Verify
-            Assert.That(result.IsSuccessful, Is.True);
-            Assert.That(result.Target.Name, Is.EqualTo(theUser.Name));
+            Assert.Multiple(() =>
+            {
+                Assert.That(result.Status, Is.EqualTo(HttpStatusCode.OK));
+                Assert.That(result.Target?.Name, Is.EqualTo(theUser.Name));
+            });
 
             userRepositoryMock.Verify(u => u.UpdateAsync(theUser), Times.Once());
         }
