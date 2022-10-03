@@ -15,7 +15,7 @@ namespace AireBugTrackerWeb.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            return RedirectToAction("Index", "Bug");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
