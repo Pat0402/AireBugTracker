@@ -1,9 +1,11 @@
 ﻿using DatabaseContext;
+using DatabaseContext.Models;
 using Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -20,6 +22,7 @@ namespace Repositories.Respositories
 
         public Task<List<T>> GetAll() => DbContext.Set<T>().ToListAsync();
         public Task<T> GetById(int id) => DbContext.Set<T>().FindAsync(id);
+
         public async Task<T> CreateAsync(T entity)
         {
             var result = DbContext.Set<T>().Add(entity);
@@ -29,5 +32,14 @@ namespace Repositories.Respositories
         }
 
         public abstract Task<T> UpdateAsync(T entity);
+
+        public Task<List<T>> GetAllOrdered(Expression<Func<T, bool>> predicate)
+        {
+            return DbContext.Set<T>().OrderBy(predicate).ToListAsync();
+        }
+
+        public abstract Task<List<T>> GetAllOrdered();
+
+        public abstract Task<List<Bug>> GetFiltered();
     }
 }

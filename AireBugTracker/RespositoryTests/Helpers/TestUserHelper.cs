@@ -18,6 +18,7 @@ namespace RespositoryTests.Helpers
             using (var dbContext = new BugTrackerContext(connection))
             {
                 dbContext.Users.AddRange(new List<User> {
+
                     new User
                     {
                         Id = 1,
@@ -27,6 +28,37 @@ namespace RespositoryTests.Helpers
                     {
                         Id = 2,
                         Name = "Larry McLarry"
+                    },
+                    new User
+                    {
+                        Id = 3,
+                        Name = "Sally McSally"
+                    }
+                });
+
+                await dbContext.SaveChangesAsync();
+            }
+
+            return connection;
+        }
+
+        public async static Task<EffortConnection> GetSeededEffortConnectionUnordered()
+        {
+            var connection = Effort.DbConnectionFactory.CreateTransient();
+
+            using (var dbContext = new BugTrackerContext(connection))
+            {
+                dbContext.Users.AddRange(new List<User> {
+
+                    new User
+                    {
+                        Id = 1,
+                        Name = "Larry McBarry"
+                    },
+                    new User
+                    {
+                        Id = 2,
+                        Name = "Barry McLarry"
                     },
                     new User
                     {

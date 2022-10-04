@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -25,7 +26,7 @@ namespace Services.Services
 
         public async Task<ServiceResult<List<T>>> GetAllAsync()
         {
-            var theBugs = await Repository.GetAll();
+            var theBugs = await Repository.GetAllOrdered();
 
             return new ServiceResult<List<T>>
             {
@@ -34,6 +35,7 @@ namespace Services.Services
                 Message = "Retrieved all bugs"
             };
         }
+
         public async Task<ServiceResult<T>> GetByIdAsync(int id)
         {
             var theBug = await Repository.GetById(id);
@@ -55,7 +57,7 @@ namespace Services.Services
             };
         }
 
-        public async Task<ServiceResult<T>> CreateAsync(T entity)
+        protected async Task<ServiceResult<T>> CreateAsync(T entity)
         {
             try
             {

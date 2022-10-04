@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<DatabaseContext.Models.Bug>
 
 @{
-    ViewData["Title"] = "View";
+    ViewData["Title"] = "Bugs";
 }
 
 <h1>Open Bugs</h1>
@@ -17,10 +17,10 @@
                 @Html.DisplayNameFor(model => model.Title)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.IsOpen)
+                @Html.DisplayNameFor(model => model.OpenedDate)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.OpenedDate)
+                @Html.DisplayNameFor(model => model.User.Name)
             </th>
             <th></th>
         </tr>
@@ -32,14 +32,14 @@
                 @Html.DisplayFor(modelItem => item.Title)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.IsOpen)
-            </td>
-            <td>
                 @Html.DisplayFor(modelItem => item.OpenedDate)
             </td>
             <td>
+                @Html.DisplayFor(modelItem => item.User.Name)
+            </td>
+            <td>
                 @Html.ActionLink("Edit", "Edit", new { id=item.Id }) |
-                @Html.ActionLink("Details", "Details", new { id=item.Id }) 
+                @Html.ActionLink("Details", "Details", new { id=item.Id })
             </td>
         </tr>
 }

@@ -34,6 +34,27 @@ namespace RespositoryTests
         }
 
         [Test]
+        public async Task GetAllOrdered_ReturnsAllUsersOrderedByName()
+        {
+            // Set up in memory database
+            var connection = await TestUserHelper.GetSeededEffortConnectionUnordered();
+
+            using (var dbContext = new BugTrackerContext(connection))
+            {
+                // Retrieve the persisted data
+                var userRepository = new UserRepository(dbContext);
+                var theUsers = await userRepository.GetAllOrdered();
+
+                // Verify
+                Assert.That(theUsers, Has.Count.EqualTo(3));
+
+                var firstUser = theUsers.First();
+
+                Assert.That(firstUser.Name, Is.EqualTo("Barry McLarry"));
+            }
+        }
+
+        [Test]
         public async Task CreateUser_CreatesUser()
         {
             var connection = await TestUserHelper.GetSeededEffortConnection();

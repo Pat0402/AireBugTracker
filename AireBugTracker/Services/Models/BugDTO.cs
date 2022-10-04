@@ -14,5 +14,6 @@ namespace Services.Models
         public string Title { get; set; }
         public string Details { get; set; }
         public bool IsOpen { get; set; }
+        public int? UserId { get; set; }
     }
 }

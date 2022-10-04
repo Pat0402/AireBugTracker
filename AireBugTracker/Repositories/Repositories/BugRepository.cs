@@ -16,12 +16,25 @@ namespace Repositories.Respositories
         {
         }
 
+        public override Task<List<Bug>> GetAllOrdered()
+        {
+            return DbContext.Bugs.OrderBy(b => b.OpenedDate).ToListAsync();
+        }
+
+        public override Task<List<Bug>> GetFiltered()
+        {
+            return DbContext.Bugs
+                .Where(b => b.IsOpen)
+                .OrderBy(b => b.Title).ToListAsync();
+        }
+
         public async override Task<Bug> UpdateAsync(Bug entity)
         {
             var theBug = await DbContext.Bugs.SingleAsync(b => b.Id == entity.Id);
             theBug.Details = entity.Details;
             theBug.IsOpen = entity.IsOpen;
             theBug.Title = entity.Title;
+            theBug.UserId = entity.UserId;
 
             await DbContext.SaveChangesAsync();
 
