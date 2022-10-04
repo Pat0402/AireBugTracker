@@ -33,6 +33,12 @@ namespace AireBugTrackerWeb.Controllers
         {
             var theBug = await _bugService.GetByIdAsync(id);
 
+            if(theBug.Status == System.Net.HttpStatusCode.NotFound)
+            {
+                Response.StatusCode = 404;
+                return View("404");
+            }
+
             return View(theBug.Target);
         }
 
