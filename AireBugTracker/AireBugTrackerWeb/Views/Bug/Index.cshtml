@@ -17,10 +17,10 @@
                 @Html.DisplayNameFor(model => model.Title)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.OpenedDate)
+                @Html.DisplayNameFor(model => model.User.Name)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.User.Name)
+                Opened
             </th>
             <th></th>
         </tr>
@@ -32,10 +32,10 @@
                 @Html.DisplayFor(modelItem => item.Title)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.OpenedDate)
-            </td>
-            <td>
                 @Html.DisplayFor(modelItem => item.User.Name)
+            </td>
+            <td class="date">
+                @Html.DisplayFor(modelItem => item.OpenedDate)
             </td>
             <td>
                 @Html.ActionLink("Edit", "Edit", new { id=item.Id }) |

@@ -25,7 +25,7 @@ namespace Repositories.Respositories
         {
             return DbContext.Bugs
                 .Where(b => b.IsOpen)
-                .OrderBy(b => b.Title).ToListAsync();
+                .OrderBy(b => b.OpenedDate).ToListAsync();
         }
 
         public async override Task<Bug> UpdateAsync(Bug entity)

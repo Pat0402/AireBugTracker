@@ -25,6 +25,8 @@
     </dl>
 </div>
 <div>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
-    <a asp-action="Index">Back to all users</a>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }, new { @class="btn btn-primary" })
+    <div>
+        <a asp-action="Index">Back to all users</a>
+    </div>
 </div>

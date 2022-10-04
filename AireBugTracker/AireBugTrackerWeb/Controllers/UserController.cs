@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Services.Interfaces;
 using Services.Models;
+using System.Diagnostics;
 
 namespace AireUserTrackerWeb.Controllers
 {
@@ -25,6 +26,12 @@ namespace AireUserTrackerWeb.Controllers
         public async Task<ActionResult> Details(int id)
         {
             var theUser = await _userService.GetByIdAsync(id);
+
+            if (theUser.Status == System.Net.HttpStatusCode.NotFound)
+            {
+                Response.StatusCode = 404;
+                return View("404");
+            }
 
             return View(theUser.Target);
         }
