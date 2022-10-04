@@ -21,6 +21,7 @@ namespace AireBugTrackerApi.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(User[]))]
         public async Task<IActionResult> Get()
         {
             var response = await _userService.GetAllAsync();
@@ -30,6 +31,8 @@ namespace AireBugTrackerApi.Controllers
         }
 
         [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(User))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Get(int id)
         {
             try
@@ -48,6 +51,8 @@ namespace AireBugTrackerApi.Controllers
         }
 
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(User))]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
         public async Task<IActionResult> Post([FromBody] UserDTO user)
         {
             try
@@ -66,6 +71,9 @@ namespace AireBugTrackerApi.Controllers
         }
 
         [HttpPut("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(User))]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Put(int id, [FromBody] UserDTO user)
         {
             try
