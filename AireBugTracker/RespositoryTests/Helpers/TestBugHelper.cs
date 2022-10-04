@@ -49,5 +49,43 @@ namespace RespositoryTests.Helpers
 
             return connection;
         }
+
+        public async static Task<EffortConnection> GetSeededEffortConnectionWithVariableDates()
+        {
+            var connection = Effort.DbConnectionFactory.CreateTransient();
+
+            using (var dbContext = new BugTrackerContext(connection))
+            {
+                dbContext.Bugs.AddRange(new List<Bug> {
+                    new Bug
+                    {
+                        Id = 1,
+                        Title = "First Bug",
+                        Details = "These are the details of the first bug",
+                        OpenedDate = DateTimeOffset.UtcNow.AddDays(-2),
+                        IsOpen = true
+                    },
+                    new Bug
+                    {
+                        Id = 2,
+                        Title = "Second Bug",
+                        Details = "These are the details of the second bug",
+                        OpenedDate = DateTimeOffset.UtcNow.AddDays(-5)
+                    },
+                    new Bug
+                    {
+                        Id = 3,
+                        Title = "Third Bug",
+                        Details = "These are the details of the third bug",
+                        OpenedDate = DateTimeOffset.UtcNow.AddDays(-1),
+                        IsOpen = true
+                    }
+                });
+
+                await dbContext.SaveChangesAsync();
+            }
+
+            return connection;
+        }
     }
 }

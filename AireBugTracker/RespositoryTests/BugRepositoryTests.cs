@@ -38,6 +38,33 @@ namespace RespositoryTests
         }
 
         [Test]
+        public async Task GetAllOrdered_ReturnsAllBugsOrderedByDate()
+        {
+            // Set up in memory database
+            var connection = await TestBugHelper.GetSeededEffortConnectionWithVariableDates();
+
+            using (var dbContext = new BugTrackerContext(connection))
+            {
+                // Retrieve the persisted data
+                var bugRepository = new BugRepository(dbContext);
+                var theBugs = await bugRepository.GetAllOrdered();
+
+                // Verify
+                Assert.That(theBugs, Has.Count.EqualTo(3));
+
+                var firstBug = theBugs.First();
+                Assert.Multiple(() =>
+                {
+                    Assert.That(firstBug.Id, Is.EqualTo(2));
+                    Assert.That(firstBug.IsOpen, Is.False);
+                    Assert.That(firstBug.Title, Is.EqualTo("Second Bug"));
+                    Assert.That(firstBug.Details, Is.EqualTo("These are the details of the second bug"));
+                    Assert.That(firstBug.OpenedDate, Is.AtMost(DateTimeOffset.UtcNow));
+                });
+            }
+        }
+
+        [Test]
         public async Task GetByExistingId_ReturnsBug()
         {
             // Set up in memory database

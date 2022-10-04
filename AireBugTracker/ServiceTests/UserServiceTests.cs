@@ -37,7 +37,7 @@ namespace ServiceTests
                 }
             };
 
-            userRepositoryMock.Setup(b => b.GetAll()).Returns(Task.FromResult(theUsers));
+            userRepositoryMock.Setup(b => b.GetAllOrdered()).Returns(Task.FromResult(theUsers));
 
             // Create the service
             var userService = new UserService(userRepositoryMock.Object);
@@ -56,7 +56,7 @@ namespace ServiceTests
             var theUser = theUsers.Single(u => u.Id == 2);
             Assert.That(theUser.Name, Is.EqualTo("Larry McLarry"));
 
-            userRepositoryMock.Verify(u => u.GetAll(), Times.Once());
+            userRepositoryMock.Verify(u => u.GetAllOrdered(), Times.Once());
         }
 
         [Test]
@@ -69,13 +69,17 @@ namespace ServiceTests
                 Name = "Arthur McArthur"
             };
 
-            userRepositoryMock.Setup(u => u.CreateAsync(theUser)).Returns(Task.FromResult<User>(theUser));
+            userRepositoryMock.Setup(u => u.CreateAsync(It.IsAny<User>())).Returns(Task.FromResult<User>(theUser));
 
             // Create the service
             var userService = new UserService(userRepositoryMock.Object);
 
             // Call action
-            var result = await userService.CreateAsync(theUser);
+            var newUser = new UserDTO
+            {
+                Name = theUser.Name
+            };
+            var result = await userService.CreateAsync(newUser);
 
             // Verify
             Assert.Multiple(() =>
@@ -84,7 +88,7 @@ namespace ServiceTests
                 Assert.That(result.Target?.Name, Is.EqualTo(theUser.Name));
             });
 
-            userRepositoryMock.Verify(u => u.CreateAsync(theUser), Times.Once());
+            userRepositoryMock.Verify(u => u.CreateAsync(It.IsAny<User>()), Times.Once());
         }
 
         [Test]

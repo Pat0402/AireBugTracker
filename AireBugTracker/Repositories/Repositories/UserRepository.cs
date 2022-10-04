@@ -16,6 +16,16 @@ namespace Repositories.Respositories
         {
         }
 
+        public override Task<List<User>> GetAllOrdered()
+        {
+            return DbContext.Users.OrderBy(u => u.Name).ToListAsync();
+        }
+
+        public override Task<List<Bug>> GetFiltered()
+        {
+            throw new NotImplementedException();
+        }
+
         public async override Task<User> UpdateAsync(User entity)
         {
             var theUser = await DbContext.Users.SingleAsync(b => b.Id == entity.Id);

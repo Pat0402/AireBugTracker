@@ -43,7 +43,7 @@ namespace ServiceTests
                 }
             };
 
-            bugRepositoryMock.Setup(b => b.GetAll()).Returns(Task.FromResult(theBugs));
+            bugRepositoryMock.Setup(b => b.GetAllOrdered()).Returns(Task.FromResult(theBugs));
 
             // Create the service
             var bugService = new BugService(bugRepositoryMock.Object);
@@ -63,7 +63,62 @@ namespace ServiceTests
                 Assert.That(firstBug.OpenedDate, Is.AtMost(DateTimeOffset.UtcNow));
             });
 
-            bugRepositoryMock.Verify(b => b.GetAll(), Times.Once());
+            bugRepositoryMock.Verify(b => b.GetAllOrdered(), Times.Once());
+        }
+
+        [Test]
+        public async Task GetOpenBugs_ReturnsOpenBugs()
+        {
+            // Create mock repository
+            var bugRepositoryMock = new Mock<IBugRepository>();
+            var theBugs = new List<Bug> {
+                new Bug
+                {
+                    Id = 1,
+                    Title = "First Bug",
+                    Details = "These are the details of the first bug",
+                    OpenedDate = DateTimeOffset.UtcNow,
+                    IsOpen = true
+                },
+                new Bug
+                {
+                    Id = 2,
+                    Title = "Second Bug",
+                    Details = "These are the details of the second bug",
+                    OpenedDate = DateTimeOffset.UtcNow
+                },
+                new Bug
+                {
+                    Id = 3,
+                    Title = "Third Bug",
+                    Details = "These are the details of the third bug",
+                    OpenedDate = DateTimeOffset.UtcNow,
+                    IsOpen = true
+                }
+            };
+
+            bugRepositoryMock.Setup(b => b.GetFiltered())
+                .Returns(Task.FromResult(theBugs.Where(b => b.IsOpen).ToList()));
+
+            // Create the service
+            var bugService = new BugService(bugRepositoryMock.Object);
+
+            // Call action
+            var result = await bugService.GetOpenBugsAsync();
+
+            // Verify
+            Assert.That(result.Target, Has.Count.EqualTo(2));
+
+            var firstBug = result.Target.Single(bug => bug.Id == 1);
+            Assert.Multiple(() =>
+            {
+                Assert.That(firstBug.IsOpen, Is.True);
+                Assert.That(firstBug.Title, Is.EqualTo("First Bug"));
+                Assert.That(firstBug.Details, Is.EqualTo("These are the details of the first bug"));
+                Assert.That(firstBug.OpenedDate, Is.AtMost(DateTimeOffset.UtcNow));
+            });
+
+            bugRepositoryMock.Verify(b => b.GetFiltered(), Times.Once());
         }
 
         [Test]
@@ -131,21 +186,28 @@ namespace ServiceTests
         {
             // Create mock repository
             var bugRepositoryMock = new Mock<IBugRepository>();
-            var theBug = new Bug()
+            
+            var dbBug = new Bug()
             {
                 Title = "First Bug",
                 Details = "These are the details of the first bug",
-                OpenedDate = DateTimeOffset.UtcNow,
-                IsOpen = true
+                IsOpen = true,
+                OpenedDate = DateTime.UtcNow,
             };
 
-            bugRepositoryMock.Setup(b => b.CreateAsync(It.IsAny<Bug>())).Returns(Task.FromResult<Bug>(theBug));
+            bugRepositoryMock.Setup(b => b.CreateAsync(It.IsAny<Bug>())).Returns(Task.FromResult<Bug>(dbBug));
 
             // Create the service
             var bugService = new BugService(bugRepositoryMock.Object);
 
             // Call action
-            var result = await bugService.CreateAsync(theBug);
+            var newBug = new BugDTO()
+            {
+                Title = "First Bug",
+                Details = "These are the details of the first bug",
+                IsOpen = true
+            };
+            var result = await bugService.CreateAsync(newBug);
 
             // Verify
             Assert.Multiple(() =>
@@ -154,7 +216,7 @@ namespace ServiceTests
                 Assert.That(result.Target?.IsOpen, Is.True);
                 Assert.That(result.Target?.Title, Is.EqualTo("First Bug"));
                 Assert.That(result.Target?.Details, Is.EqualTo("These are the details of the first bug"));
-                Assert.That(result.Target?.OpenedDate, Is.EqualTo(theBug.OpenedDate));
+                Assert.That(result.Target?.OpenedDate, Is.AtMost(DateTimeOffset.UtcNow));
             });
 
             bugRepositoryMock.Verify(b => b.CreateAsync(It.IsAny<Bug>()), Times.Once());
@@ -165,11 +227,10 @@ namespace ServiceTests
         {
             // Create mock repository
             var bugRepositoryMock = new Mock<IBugRepository>();
-            var theBug = new Bug()
+            var theBug = new BugDTO()
             {
                 Title = "First Bug",
                 Details = "These are the details of the first bug",
-                OpenedDate = DateTimeOffset.UtcNow,
                 IsOpen = true
             };
 

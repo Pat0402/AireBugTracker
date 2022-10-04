@@ -42,13 +42,18 @@ namespace AireUserTrackerWeb.Controllers
         {
             try
             {
+                if (!ModelState.IsValid)
+                {
+                    return View(user);
+                }
+
                 await _userService.CreateAsync(user);
 
                 return RedirectToAction(nameof(Index));
             }
             catch
             {
-                return View();
+                return View(user);
             }
         }
 
@@ -67,6 +72,11 @@ namespace AireUserTrackerWeb.Controllers
         {
             try
             {
+                if (!ModelState.IsValid)
+                {
+                    return View(user);
+                }
+
                 var response = await _userService.UpdateAsync(id, user);
                 return RedirectToAction(nameof(Index));
             }

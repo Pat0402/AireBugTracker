@@ -26,10 +26,23 @@ namespace Services.Services
                 IsOpen = true,
                 Title = dto.Title,
                 Details = dto.Details,
-                OpenedDate = DateTimeOffset.UtcNow
+                OpenedDate = DateTimeOffset.UtcNow,
+                UserId = dto.UserId
             };
 
             return await CreateAsync(theBug);
+        }
+
+        public async Task<ServiceResult<List<Bug>>> GetOpenBugsAsync()
+        {
+            var theBugs = await Repository.GetFiltered();
+
+            return new ServiceResult<List<Bug>>
+            {
+                Status = HttpStatusCode.OK,
+                Target = theBugs,
+                Message = "Retrieved all bugs"
+            };
         }
 
         public override async Task<ServiceResult<Bug>> UpdateAsync(int id, BugDTO bugDTO)
@@ -40,7 +53,8 @@ namespace Services.Services
                 {
                     Id = id,
                     Title = bugDTO.Title,
-                    Details = bugDTO.Details
+                    Details = bugDTO.Details,
+                    UserId = bugDTO.UserId
                 };
 
                 var updatedEntity = await Repository.UpdateAsync(theBug);

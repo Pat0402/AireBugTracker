@@ -22,7 +22,8 @@ namespace DatabaseContext.Models
         public string Details { get; set; } 
         public bool IsOpen { get; set; }
         public DateTimeOffset OpenedDate { get; set; }
+        public int? UserId { get; set; }
 
-        public virtual ICollection<User> Users { get; set; }
+        public virtual User? User { get; set; }
     }
 }
