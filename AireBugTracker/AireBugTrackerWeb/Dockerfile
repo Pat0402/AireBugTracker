@@ -3,13 +3,20 @@
 FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
 WORKDIR /app
 EXPOSE 80
-EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
 COPY ["AireBugTrackerWeb/AireBugTrackerWeb.csproj", "AireBugTrackerWeb/"]
+COPY ["Repositories/Repositories.csproj", "Repositories/"]
+COPY ["Services/Services.csproj", "Services/"]
+COPY ["DatabaseContext/DatabaseContext.csproj", "DatabaseContext/"]
 RUN dotnet restore "AireBugTrackerWeb/AireBugTrackerWeb.csproj"
-COPY . .
+
+COPY AireBugTrackerWeb AireBugTrackerWeb
+COPY Repositories Repositories 
+COPY Services Services
+COPY DatabaseContext DatabaseContext
+
 WORKDIR "/src/AireBugTrackerWeb"
 RUN dotnet build "AireBugTrackerWeb.csproj" -c Release -o /app/build
 
